@@ -1,0 +1,370 @@
+﻿
+@model CalculateGrade.Models.EvaluateModel
+@{
+    ViewData["Title"] = "Chấm điểm bài tập";
+}
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        color: #343a40;
+    }
+    .container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #3498db;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    textarea{
+        height: 300px;
+    }
+
+    #btnGrade {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    #btnGrade:hover{
+        background-color: #218838;
+        border-color: #1e7e34;
+        box-shadow: 0px 4px 8px rgba(40, 167, 69, 0.3);
+    }
+    #btnCheckSyllabus {
+        background-color: #34495e;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    #btnCheckSyllabus:hover{
+        background-color: #34495e;
+        border-color: #34495e;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+        background-color: #f5f5f5;
+        border-bottom: none;
+    }
+
+    .card-header h4 {
+        font-weight: 600;
+    }
+
+    #feedback1, #syllabusMatch1 {
+        color: #3498db;
+        text-align: left;
+    }
+
+    #feedback2, #syllabusMatch2 {
+        color: #27ae60;
+        text-align: left;
+    }
+    #results{
+        white-space: pre-line;
+    }
+
+    #resultsSyllabus {
+        white-space: pre-line;
+    }
+
+    .display-4 {
+        font-weight: 600;
+        color: #007bff;
+    }
+    ////
+    .custom-form {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-file-upload {
+        position: relative;
+        display: block;
+        width: 20%;
+        margin-bottom: 20px;
+    }
+
+    .custom-file-upload input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .custom-file-upload-label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: calc(2.25rem + 2px);
+        padding: 0.375rem 0.75rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+
+    .custom-file-upload-label i {
+        margin-right: 10px;
+    }
+
+    .custom-file-upload .file-name {
+        display: block;
+        margin-top: 20px;
+        font-size: 1rem;
+        color: #6c757d;
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+
+    textarea.form-control {
+        resize: vertical; /* Cho phép thay đổi chiều cao của textarea */
+    }
+    .button-group{
+        padding-top: 20px;
+    }
+</style>
+
+<div class="container">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+
+    <form id="gradingForm" enctype="multipart/form-data">
+        @* <div class="form-group">
+            <label for="requirementFile">Tải lên đề bài:</label>
+            <input type="file" class="form-control-file" id="requirementFile" name="requirementFile" accept=".docx" required>
+        </div>
+        <div class="form-group">
+            <label for="submissionFile">Tải lên bài làm:</label>
+            <input type="file" class="form-control-file" id="submissionFile" name="submissionFile" multiple>
+        </div>
+        <div class="form-group">
+            <label for="Syllabus">Syllabus:</label>
+            <textarea class="form-control" id="Syllabus" name="Syllabus" rows="3">@Model.Syllabus</textarea>
+        </div> *@
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group custom-file-upload">
+            <label for="requirementFile">Tải lên đề bài (.docx):</label>
+            <input type="file" class="form-control-file" id="requirementFile" name="requirementFile" accept=".docx" required>
+            <label for="requirementFile" class="custom-file-upload-label">
+                <i class="fas fa-file-upload"></i> Chọn file đề bài
+            </label>
+            <span class="file-name">Không có file nào được chọn</span>
+        </div>
+
+        <div class="form-group custom-file-upload">
+            <label for="submissionFile">Tải lên bài làm (.ipynb):</label>
+            <input type="file" class="form-control-file" id="submissionFile" name="submissionFile" multiple>
+            <label for="submissionFile" class="custom-file-upload-label">
+                <i class="fas fa-file-upload"></i> Chọn file bài làm
+            </label>
+            <span class="file-name">Không có file nào được chọn</span>
+        </div>
+        <div class="form-group">
+            <label for="Syllabus">Syllabus:</label>
+            <textarea class="form-control" id="Syllabus" name="Syllabus" rows="5">@Model.Syllabus</textarea>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="Model1">Model 1:</label>
+                    <select class="form-control" id="Model1" name="Model1">
+                        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                        <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                        <option value="llama3-8b-8192">llama3-8b-8192</option>
+                        <option value="gemma2-9b-it">gemma2-9b-it</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="Model2">Model 2:</label>
+                    <select class="form-control" id="Model2" name="Model2">
+                        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                        <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                        <option value="llama3-8b-8192">llama3-8b-8192</option>
+                        <option value="gemma2-9b-it">gemma2-9b-it</option>
+                    </select>
+                </div>
+            </div>
+        </div>       
+        <div class="button-group">
+            <button type="button" class="btn btn-primary mr-2" id="btnGrade">
+                <span class="spinner-border spinner-border-sm" id="loadingGrade" role="status" aria-hidden="true" style="display:none;"></span>
+                Chấm điểm
+            </button>
+            <button type="button" class="btn btn-secondary" id="btnCheckSyllabus">
+                <span class="spinner-border spinner-border-sm" id="loadingSyllabus" role="status" aria-hidden="true" style="display:none;"></span>
+                Kiểm tra Syllabus
+            </button>
+        </div>
+    </form>
+
+    <div class="row mt-5" id="results" style="display:none;">
+        <div class="col-md-6">
+            <div class="card p-3 mb-5">
+                <div class="card-header">
+                    <h4 class="text-primary">Model 1</h4>
+                </div>
+                <div id ="feedback1" class="card-body">
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3 mb-5">
+                <div class="card-header">
+                    <h4 class="text-success">Model 2</h4>
+                </div>
+                <div id="feedback2" class="card-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-5" id="resultsSyllabus" style="display:none;">
+        <div class="col-md-6">
+            <div class="card p-3 mb-5">
+                <div class="card-header">
+                    <h4 class="text-primary">Model 1</h4>
+                </div>
+                <div id="syllabusMatch1" class="card-body">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3 mb-5">
+                <div class="card-header">
+                    <h4 class="text-success">Model 2</h4>
+                </div>
+                <div id="syllabusMatch2" class="card-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        const fileInputs = document.querySelectorAll('.custom-file-upload input[type="file"]');
+
+        fileInputs.forEach(input => {
+            input.addEventListener('change', () => {
+                const fileName = input.files.length > 1
+                    ? `${input.files.length} files selected`
+                    : input.files[0].name;
+                const label = input.nextElementSibling;
+                const span = label.nextElementSibling;
+                span.textContent = fileName;
+            });
+        });
+        $(document).ready(function () {
+            $("#btnGrade").click(function () {
+                $("#loadingGrade").show();
+                submitForm('@Url.Action("Grade", "Home")');
+            });
+
+            $("#btnCheckSyllabus").click(function () {
+                $("#loadingSyllabus").show();
+                submitFormSyllabus('@Url.Action("CheckSyllabus", "Home")');
+            });
+        });
+
+        function submitForm(url) {
+            var formData = new FormData();
+            // Lấy giá trị từ các input và thêm vào FormData
+            formData.append("requirementFile", $("#requirementFile")[0].files[0]);
+            formData.append("Syllabus", $("#Syllabus").val());
+            formData.append("Model1", $("#Model1").val());
+            formData.append("Model2", $("#Model2").val());
+            // Lấy tất cả file trong input "SolutionFiles"
+            $.each($("#submissionFile")[0].files, function (i, file) {
+                formData.append('submissionFile[' + i + ']', file);
+            });
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#feedback1").html(response.evaluation);
+                    $("#feedback2").html(response.evaluationMixtral);
+                    $("#results").show();
+                    $("#loadingGrade").hide();
+                },
+                error: function () {
+                    alert("Đã xảy ra lỗi.");
+                }
+            });
+        }
+        function submitFormSyllabus(url) {
+            var formData = new FormData();
+            // Lấy giá trị từ các input và thêm vào FormData
+            formData.append("requirementFile", $("#requirementFile")[0].files[0]);
+            formData.append("Syllabus", $("#Syllabus").val());
+            formData.append("Model", $("#Model").val());
+            formData.append("Model1", $("#Model1").val());
+            formData.append("Model2", $("#Model2").val());
+            // Lấy tất cả file trong input "SolutionFiles"
+            $.each($("#submissionFile")[0].files, function (i, file) {
+                formData.append('submissionFile[' + i + ']', file);
+            });
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#syllabusMatch1").html(response.syllabusCheckResult);
+                    $("#syllabusMatch2").html(response.syllabusMixtral);
+                    $("#resultsSyllabus").show();
+                    $("#loadingSyllabus").hide();
+                },
+                error: function () {
+                    alert("Đã xảy ra lỗi.");
+                }
+            });
+        }
+    </script>
+}

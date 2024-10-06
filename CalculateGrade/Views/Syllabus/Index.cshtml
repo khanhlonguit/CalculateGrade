@@ -1,0 +1,269 @@
+﻿@model CalculateGrade.Models.SyllabusModel
+@{
+    ViewData["Title"] = "View";
+}
+<style>
+    /* General styles */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        color: #343a40;
+    }
+
+    h3{
+        padding-bottom: 20px;
+    }
+
+    .text-center {
+        padding: 2rem 0;
+    }
+
+    .display-4 {
+        font-weight: 600;
+        color: #007bff;
+    }
+
+    /* Form styles */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-control-file {
+        padding: 0.5rem;
+    }
+
+
+    /* Results section */
+    .row {
+        margin-top: 2rem;
+    }
+
+    .col-md-6 {
+        padding: 1rem;
+    }
+
+    .card-body {
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 1.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transform: translateY(10px); /* Dịch lên trên 10px */
+        transition: all 0.3s ease;
+    }
+
+    /* Button styles */
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0062cc;
+        border-color: #005cbf;
+        box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    #select_result {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    #select_result:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+        box-shadow: 0px 4px 8px rgba(40, 167, 69, 0.3);
+    }
+
+    #ResultModel1,
+    #ResultModel2 {
+        text-align: left;
+        white-space: pre-wrap;
+    }
+
+    .card-body:hover{
+        opacity: 1; /* Hiển thị khi hover */
+        transform: translateY(0); /* Trở về vị trí ban đầu */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Thêm shadow */
+    }
+
+    .select-button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+</style>
+
+<div class="text-center">
+    <h1 class="display-4">Syllabus Summarizer</h1>
+
+    <form enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="File">Choose Syllabus File:</label>
+            <input type="file" class="form-control-file" id="SyllabusFile" name="SyllabusFile">
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="Model1">Model 1:</label>
+                    <select class="form-control" id="Model1" name="Model1">
+                        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                        <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                        <option value="llama3-8b-8192">llama3-8b-8192</option>
+                        <option value="gemma2-9b-it">gemma2-9b-it</option>
+                    </select>
+                    <button type="button" class="btn btn-primary mt-3 mb-2 me-1" id="GenerateModel1">
+                        <span class="spinner-border spinner-border-sm" id="loading1" role="status" aria-hidden="true" style="display:none;"></span>
+                        Generate Model 1
+                     </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="Model2">Model 2:</label>
+                    <select class="form-control" id="Model2" name="Model2">
+                        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                        <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                        <option value="llama3-8b-8192">llama3-8b-8192</option>
+                        <option value="gemma2-9b-it">gemma2-9b-it</option>
+                    </select>
+                    <button type="button" class="btn btn-primary mt-3 mb-2 me-1" id="GenerateModel2">
+                        <span class="spinner-border spinner-border-sm" id="loading2" role="status" aria-hidden="true" style="display:none;"></span>
+                        Generate Model 2
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+    <h2>Kết quả</h2>
+    <div class="row">
+        <div id="result_model1" class="col-md-6 h-100" style="display:none;">
+            <button type="button" class="select-button" id="select_result1" onclick="selectResult(1)">
+                Chọn kết quả 
+            </button>
+            <div class ="card-body">
+                <h3>Mô hình 1</h3>
+                <div id="ResultModel1" >
+                </div>
+            </div>           
+        </div>
+        <div id="result_model2" class="col-md-6 h-100" style="display:none;">
+            <button type="button" class="select-button" id="select_result2" onclick="selectResult(2)">
+                Chọn kết quả
+            </button>
+            <div class="card-body">
+                <h3>Mô hình 2</h3>
+                <div id="ResultModel2">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section Scripts{
+<script>
+        $(document).ready(function () {
+            $("#GenerateModel1").click(function () {
+                $("#loading1").show();
+                submitFormModel1('@Url.Action("GenerateModel1", "Syllabus")');
+                
+            });
+
+            $("#GenerateModel2").click(function () {
+                $("#loading2").show();
+                submitFormModel2('@Url.Action("GenerateModel1", "Syllabus")');
+                
+            });
+        });
+        function submitFormModel1(url) {
+            var formData = new FormData();
+            console.log($("#Model1").val())
+            // Lấy giá trị từ các input và thêm vào FormData
+            formData.append("SyllabusFile", $("#SyllabusFile")[0].files[0]);
+            formData.append("Model", $("#Model1").val());
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#ResultModel1").html(response.resultModel);
+                    $("#result_model1").show();
+                    $("#loading1").hide();
+                },
+                error: function () {
+                    alert("Đã xảy ra lỗi.");
+                    $("#loading1").hide();
+                }
+            });
+        }
+        function submitFormModel2(url) {
+            var formData = new FormData();
+            console.log($("#Model2").val())
+            // Lấy giá trị từ các input và thêm vào FormData
+            formData.append("SyllabusFile", $("#SyllabusFile")[0].files[0]);
+            formData.append("Model", $("#Model2").val());
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#ResultModel2").html(response.resultModel);
+                    $("#result_model2").show();
+                    $("#loading2").hide();
+                },
+                error: function () {
+                    alert("Đã xảy ra lỗi.");
+                    $("#loading2").hide();
+                }
+            });
+        }
+
+        function selectResult(i) {
+            var result;
+            if (i === 1) {
+                result = document.getElementById("ResultModel1").textContent;
+            }
+            else {
+                result = document.getElementById("ResultModel2").textContent;
+            }
+            console.log(result);
+
+            $.ajax({
+                url: '@Url.Action("SaveResult", "Syllabus")',
+                type: "POST",
+                data: { result: result },
+                success: function (response) {
+                    window.location.href = '@Url.Action("Index", "Home")';
+                    alert("Lưu kết quả thành công!");
+                },
+                error: function () {
+                    alert("Đã xảy ra lỗi.");
+                }
+            });
+        }
+</script>
+}
