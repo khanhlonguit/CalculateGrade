@@ -131,42 +131,6 @@ app.post('/chat', async (req, res) => {
 app.listen(3001,()=>{
     console.log("App is running on port 3001");
 });
-app.post('/api/GPTgrade', upload.single('submission'), async (req, res) => {
-  try {
-    const { requirement } = req.body;
-    const submissionFile = req.file;
-
-    const submissionContent = extractContent(submissionFile.path);
-
-    // Tạo messages cho ChatGPT
-    const messages = [
-      { role: "system", content: "Bạn là một giáo viên dạy Python đang chấm điểm bài tập. Hãy đưa ra đánh giá chi tiết và công bằng." },
-      { role: "user", content: `## Yêu cầu đề bài:\n${requirement}\n## Bài làm của học viên:\n${submissionContent}\n## Đánh giá bài làm (điểm số /10 và nhận xét chi tiết):` }
-    ];
-
-    // Gọi OpenAI API để lấy kết quả từ ChatGPT
-    const response = await groq.chat.completions.create({
-      model: "mixtral-8x7b-32768", 
-      messages: messages,
-      // (Optional) Thêm các tham số khác nếu cần 
-      // Ví dụ: temperature, top_p, max_tokens, ...
-    });
-
-    const evaluation = response.choices[0].message.content;
-    console.log(evaluation);
-    // Xử lý kết quả từ ChatGPT, có thể lưu vào cơ sở dữ liệu
-    // ...
-
-    res.json({ success: true, evaluation });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Lỗi trong quá trình chấm điểm.' });
-  }
-  finally {
-    // Delete the uploaded file after processing
-    fs.unlink(req.file.path);
-  }
-});
 
 // Hàm hỗ trợ trích xuất nội dung từ file .ipynb
 function extractContent(filePath) {
@@ -258,11 +222,16 @@ app.post('/summarize', upload.single('syllabus'), async (req, res) => {
         const selectModel = req.body.model; // Lấy model từ body
         console.log(selectModel);
         var content = (await mammoth.extractRawText({ path: req.file.path })).value;
-        const systemPrompt ='Bạn là một chuyên gia soạn thảo văn bản, có khả năng tóm tắt và trích xuất từ khóa trong văn bản'
+        const systemPrompt ='Bạn là một giáo viên lập trình lâu năm có kinh nghiệm, cũng như chuyên gia về rút trích tóm tắt các Syllabus của các khóa học.\n\
+                            Vai trò chính của bạn là dựa trên Syllabus của một môn học, hãy tìm các nội dung chính và phụ, tóm tắt theo nội dung chính là chủ yếu.\n\
+                            Nhiệm vụ là tạo ra bản tóm tắt Syllabus xúc tích, ngắn gọn bao gồm nội dung chính và liệt kê theo dạng bullet, thường dài từ 400 từ trở xuống\n\
+                            Hướng dẫn quan trọng:\n\
+                            Chú ý đến các nội dung chính, bỏ qua các phần đầu như set up môi trường hay các khái niệm chung về lập trình.\n\
+                            Chỉ từ 5-7 nội dung chính.'
         const prompt = `## Đây là nội dung khóa học:
         ${content}
 
-        ## Tôi đang gặp một số khó khăn về vấn đề tóm tắt và trích xuất từ khóa từ nội dung khóa học. Bạn hãy giúp tôi tóm tắt và trích xuất từ khóa của nội dung khóa học, nội dung tóm tắt và từ khóa được trích xuất đều bằng tiếng Việt`;
+        ## Tôi đang gặp một số khó khăn về vấn đề tóm tắt nội dung khóa học. Bạn hãy giúp tôi tóm tắt nội dung khóa học, nội dung tóm tắt đều bằng tiếng Việt`;
         const messages = [
           { role: "system", content: `${systemPrompt}` },
           { role: "user", content: prompt}
