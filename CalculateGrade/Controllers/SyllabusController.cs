@@ -1,7 +1,8 @@
 ﻿using CalculateGrade.Helper;
 using CalculateGrade.Models;
 using Microsoft.AspNetCore.Mvc;
-using NotebookGrader.Web.Controllers;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace CalculateGrade.Controllers
 {
@@ -40,7 +41,36 @@ namespace CalculateGrade.Controllers
             TempData["Result"] = result;
             return Ok();
         }
+        [HttpPost]
+        public IActionResult GetHeading1(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            string heading1 = "";
+
+            using (WordprocessingDocument wordDocument = WordprocessingDocument.Open(file.OpenReadStream(), false))
+            {
+                Body body = wordDocument.MainDocumentPart.Document.Body;
+
+                // Lấy heading 1 (giả sử bạn chỉ cần heading đầu tiên)
+                Paragraph headingParagraph = body.Descendants<Paragraph>()
+                    .FirstOrDefault(p => p.ParagraphProperties != null &&
+                                         p.ParagraphProperties.ParagraphStyleId != null &&
+                                         p.ParagraphProperties.ParagraphStyleId.Val.Value.StartsWith("Heading1"));
+
+                if (headingParagraph != null)
+                {
+                    heading1 = headingParagraph.InnerText.Trim();
+                }
+            }
+
+            return Json(new { heading1 = heading1 });
+        }
     }
+
     public class SyllabusResult
     {
         public string Result { get; set; }
