@@ -187,17 +187,25 @@ app.post('/evaluate', upload.fields([{ name: 'pdfFile' }, { name: 'submission', 
 app.post('/check-relevance', upload.single('pdfFile'), async (req, res) => {
   try {
       const syllabusContent = req.body.syllabus; // Lấy syllabus từ body
+      console.log(syllabusContent);
       const model1 = req.body.model1;
       const model2 = req.body.model2;
       var pdfContent = (await mammoth.extractRawText({ path: req.file.path })).value;
-      const systemPrompt ='Bạn là một giáo viên Python có kinh nghiệm.'
+      const systemPrompt ='Bạn là một giáo viên dạy lập trình lâu năm có kinh nghiệm, cũng như là chuyên gia về so sánh đề thi với syllabus của khóa học.\n\
+                    Vai trò chính của bạn là dựa vào Syllabus của môn học, hãy so sánh nội dung các câu của đề thi có nằm trong syllabus và đưa ra lý do.\n\
+                    Nhiệm vụ là so sánh giữa các câu trong đề thi và syllabus, đưa ra kết quả tổng quan giữa độ khớp của đề thi so với Syllabus trên thang điểm 10, chỉ rõ những điểm khớp hoặc không khớp của đề thi so với Syllabus.\n\
+                    Hướng dẫn quan trọng:\n\
+                    Nội dung trả lời không quá 300 chữ, và hoàn toàn bằng tiếng Việt'
       const prompt = `## Yêu cầu đề bài:
       ${pdfContent}
       
       ## Syllabus:
       ${syllabusContent}
 
-      ##Đề bài có khớp với syllabus hay không? Trả lời "Có" hoặc "Không" và giải thích lý do.`;
+      ##Tôi đang gặp vấn đề về so sánh giữa nội dung của đề thi với Syllabus. 
+      Bạn hãy giúp tôi đưa ra kết quả so sánh giữa các câu trong đề thi và syllabus,
+       chỉ rõ những điểm khớp hoặc không khớp của đề thì với Syllabus
+       (nếu tôi đính kèm thiếu đề bài hoặc syllabus không đầy đủ thì hãy phản hồi ngay)`;
       const messages = [
         { role: "system", content: `${systemPrompt}` },
         { role: "user", content: prompt}
@@ -228,16 +236,18 @@ app.post('/summarize', upload.single('syllabus'), async (req, res) => {
                             Hướng dẫn quan trọng:\n\
                             Chú ý đến các nội dung chính, bỏ qua các phần đầu như set up môi trường hay các khái niệm chung về lập trình.\n\
                             Chỉ từ 5-7 nội dung chính.'
+        console.log(content);
         const prompt = `## Đây là nội dung khóa học:
         ${content}
 
-        ## Tôi đang gặp một số khó khăn về vấn đề tóm tắt nội dung khóa học. Bạn hãy giúp tôi tóm tắt nội dung khóa học, nội dung tóm tắt đều bằng tiếng Việt`;
+        ## Tôi đang gặp một số khó khăn về vấn đề tóm tắt nội dung khóa học. 
+        Bạn hãy giúp tôi tóm tắt nội dung khóa học, nội dung tóm tắt đều bằng tiếng Việt
+        (nếu tôi đính kèm thiếu nội dung khóa học hoặc syllabus thì hãy phản hồi ngay)`;
         const messages = [
           { role: "system", content: `${systemPrompt}` },
           { role: "user", content: prompt}
         ];
         var result = await callModel(selectModel, systemPrompt, prompt, messages);
-        console.log(result);
         res.json({ success: true, result });
 
     } catch (error) {
@@ -282,6 +292,5 @@ async function callModel(selectModel, systemPrompt, prompt, messages){
             result = MixtralResponse.choices[0].message.content;
             break;
         }
-      console.log(result);
       return result;
 }

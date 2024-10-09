@@ -234,7 +234,6 @@
         <div id="result_model1" class="col-md-6">
             <div class="d-flex flex-column">               
                 <div class="card-body flex-grow-1 overflow-auto">
-                    @* <div class="dots-5" id="loading1" role="status" aria-hidden="true"></div> *@
                     <div class="loading-container d-flex align-items-center justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                         <div class="dots-5" id="loading1" role="status" aria-hidden="true" style="display:none"></div>
                     </div>
@@ -252,7 +251,6 @@
         <div id="result_model2" class="col-md-6">           
             <div class="d-flex flex-column">
                 <div class="card-body flex-grow-1 overflow-auto">
-                    @* <div class="dots-5" id="loading2" role="status" aria-hidden="true" style="display:none"></div> *@
                     <div class="loading-container d-flex align-items-center justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                         <div class="dots-5" id="loading2" role="status" aria-hidden="true" style="display:none"></div>
                     </div>
@@ -376,10 +374,10 @@
         function selectResult(i) {
             var result;
             if (i === 1) {
-                result = document.getElementById("ResultModel1").textContent;
+                result = document.getElementById("ResultModel1").innerHTML;
             }
             else {
-                result = document.getElementById("ResultModel2").textContent;
+                result = document.getElementById("ResultModel2").innerHTML;
             }
             console.log(result);
 
