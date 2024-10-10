@@ -134,12 +134,17 @@ app.listen(3001,()=>{
 
 // Hàm hỗ trợ trích xuất nội dung từ file .ipynb
 function extractContent(filePath) {
-  const fileContent = JSON.parse(Fs.readFileSync(filePath, 'utf8'));
-  let content = '';
-  fileContent.cells.forEach(cell => {
-    content += cell.source.join('') + '\n';
-  });
-  return content;
+  try {
+    const fileContent = Fs.readFileSync(filePath, 'utf8');
+    // let content = '';
+    // fileContent.cells.forEach(cell => {
+    //   content += cell.source.join('') + '\n';
+    // });
+    return fileContent;
+  } catch (error) {
+    console.error(`Lỗi khi xử lý file ${filePath}:`);
+    throw error;
+  }
 }
 
 app.post('/evaluate', upload.fields([{ name: 'pdfFile' }, { name: 'submission', maxCount: 5 }]), async (req, res) => {
@@ -156,16 +161,23 @@ app.post('/evaluate', upload.fields([{ name: 'pdfFile' }, { name: 'submission', 
         submissionContent += fileData + '\n';
       }
     }
-    const systemPrompt ='Bạn là một giáo viên Python có kinh nghiệm.'
+    console.log(submissionContent);
+    const systemPrompt ='Bạn là một giáo viên dạy lập trình lâu năm có kinh nghiệm, cũng như là chuyên gia chấm bài thi \n\
+                Vai trò chính của bạn là dựa vào đề thi cũng như bài giải có sẵn, xem bài giải mẫu đó có giải quyết được đề thi hay không và có lời giải nào hay hơn nữa không\n\
+                Nhiệm vụ là chấm điểm bài giải có sẵn, xem bài giải có giải quyết được đề thi cũng như đã tối ưu hay chưa và nếu chưa thì đưa ra lời giải khác hay hơn.\n\
+                Hướng dẫn quan trọng\n\
+                Trình bày lời giải ngắn gọn và dễ hiểu, hoàn toàn bằng tiếng Việt'
+
     const prompt = `## Yêu cầu đề bài:
     ${pdfContent}
-    
-    ## Bài làm của học viên:
+    #################################################
+    ## Bài làm mẫu:
     ${submissionContent}
 
-    ## đề bài có tổng điểm đúng bằng 10 hay không?
-    ## Đánh giá bài làm so với yêu cầu đề (điểm số và nhận xét chi tiết):`;
-    //console.log(prompt);
+    Tôi đang gặp vấn đề về chấm bài làm, bạn hãy giúp tôi 
+    chấm điểm bài giải có sẵn, xem bài giải giải quyết được bao nhiêu câu trong đề thi, cũng như đã tối ưu hay chưa 
+    và nếu chưa thì đưa ra lời giải khác hay hơn. `;
+
     const messages = [
       { role: "system", content: `${systemPrompt}` },
       { role: "user", content: prompt}
@@ -180,6 +192,10 @@ app.post('/evaluate', upload.fields([{ name: 'pdfFile' }, { name: 'submission', 
   } finally {
     // ... (Delete uploaded files) ...
     //fs.unlink(req.file.path);
+    fs.unlink(req.files.pdfFile[0].path);
+    for(const file of req.files['submission']){
+      fs.unlink(file.path);
+    }
   }
 });
 

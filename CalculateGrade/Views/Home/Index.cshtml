@@ -206,6 +206,10 @@
         overflow-x: auto;
         height: 500px;
     }
+    .file-name-requirement,
+    .file-names-submission {
+        margin-top: 20px;
+    }
 </style>
 
 <div class="home">
@@ -232,7 +236,9 @@
             <label for="requirementFile" class="custom-file-upload-label">
                 <i class="fas fa-file-upload"></i> Chọn file đề bài
             </label>
-            <span class="file-name">Không có file nào được chọn</span>
+            <div class="file-name-requirement">
+                <p>Không có file nào được chọn</p>
+            </div>
         </div>
 
         <div class="form-group custom-file-upload">
@@ -241,7 +247,9 @@
             <label for="submissionFile" class="custom-file-upload-label">
                 <i class="fas fa-file-upload"></i> Chọn file bài làm
             </label>
-            <span class="file-name">Không có file nào được chọn</span>
+            <div class="file-names-submission">
+                <p>Không có file nào được chọn</p>
+            </div>
         </div>
         <div class="form-group">
             <label for="Syllabus">Syllabus:</label>
@@ -330,21 +338,40 @@
 </div>
 @section Scripts{
     <script>
-        const fileInputs = document.querySelectorAll('.custom-file-upload input[type="file"]');
+        //const fileInputs = document.querySelectorAll('.custom-file-upload input[type="file"]');
+        const submissionFileInput = document.getElementById('submissionFile');
+        const requirementFileInput = document.getElementById('requirementFile');
+        const fileNameRequirementContainer = document.querySelector('.file-name-requirement');
+        const fileNamesSubmissionContainer = document.querySelector('.file-names-submission');
 
-        fileInputs.forEach(input => {
-            input.addEventListener('change', () => {
-                const fileName = input.files.length > 1
-                    ? `${input.files.length} files selected`
-                    : input.files[0].name;
-                const label = input.nextElementSibling;
-                const span = label.nextElementSibling;
-                span.textContent = fileName;
-            });
+        function displayFileNames(input, container) {
+            container.innerHTML = '';
+
+            if (input.files.length > 0) {
+                for (let i = 0; i < input.files.length; i++) {
+                    const fileName = input.files[i].name;
+                    const fileElement = document.createElement('p');
+                    fileElement.textContent = `${i + 1}. ${fileName}`;
+                    container.appendChild(fileElement);
+                }
+            } else {
+                const noFileElement = document.createElement('p');
+                noFileElement.textContent = 'Không có file nào được chọn';
+                container.appendChild(noFileElement);
+            }
+        }
+
+        submissionFileInput.addEventListener('change', function () {
+            displayFileNames(this, fileNamesSubmissionContainer);
         });
+
+        requirementFileInput.addEventListener('change', function () {
+            displayFileNames(this, fileNameRequirementContainer);
+        });       
+        
         $(document).ready(function () {
             $("#btnGrade").click(function () {
-                if (validateForm()){
+                if (validateGrading()) {
                     $("#results").show();
                     $("#loadingFeedback1").show();
                     $("#loadingFeedback2").show();
@@ -354,7 +381,7 @@
             });
 
             $("#btnCheckSyllabus").click(function () {
-                if (validateForm()){
+                if (validateSyllabus()) {
                     $("#resultsSyllabus").show();
                     $("#loadingSyllabusMatch1").show();
                     $("#loadingSyllabusMatch2").show();
@@ -363,7 +390,7 @@
                 }               
             });
         });
-        function validateForm() {
+        function validateSyllabus() {
             // Kiểm tra xem có file được chọn cho input "requirementFile" hay không
             if ($('#requirementFile')[0].files.length === 0) {
                 alert('Vui lòng chọn file đề bài!');
@@ -373,12 +400,23 @@
             // Kiểm tra nội dung syllabus
             const syllabus = document.getElementById("Syllabus");
 
-            if (syllabus.innerHTML.trim() === "") {
+            if (syllabus.textContent.replace(/\s/g, '') === "") {
                 alert('Vui lòng nhập nội dung Syllabus!');
                 return false;
             }
 
             return true; // Form hợp lệ
+        }
+        function validateGrading(){
+            if ($('#requirementFile')[0].files.length === 0) {
+                alert('Vui lòng chọn file đề bài!');
+                return false;
+            }
+            if ($('#submissionFile')[0].files.length === 0) {
+                alert('Vui lòng chọn file bài giải!');
+                return false;
+            }
+            return true;
         }
         function submitForm(url) {
             var formData = new FormData();

@@ -46,7 +46,9 @@ namespace NotebookGrader.Web.Controllers
                     else
                     {
                         ModelState.AddModelError("", "Error evaluating work.");
-                        return Json(new { Feedback = "Có lỗi xảy ra" });
+                        return Json(new { Evaluation = "Có lỗi xảy ra",
+                                            EvaluationMixtral = "Có lỗi xảy ra"
+                                        });
                     }
                 }
             }
