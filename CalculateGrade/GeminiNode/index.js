@@ -1,5 +1,6 @@
 const express = require("express");
 const multer = require('multer');
+const path = require('path');
 const { GoogleAuth } = require('google-auth-library');
 const { GoogleGenerativeAI ,HarmCategory, HarmBlockThreshold   } = require("@google/generative-ai");
 const { GoogleAIFileManager, FileState } = require('@google/generative-ai/server'); // Assuming correct path
@@ -133,14 +134,20 @@ app.listen(3001,()=>{
 });
 
 // Hàm hỗ trợ trích xuất nội dung từ file .ipynb
-function extractContent(filePath) {
+function extractContent(filePath,type) {
   try {
-    const fileContent = Fs.readFileSync(filePath, 'utf8');
-    // let content = '';
-    // fileContent.cells.forEach(cell => {
-    //   content += cell.source.join('') + '\n';
-    // });
-    return fileContent;
+    let content = '';
+    if (type === '.ipynb'){
+        const fileContent = JSON.parse(Fs.readFileSync(filePath, 'utf8'));
+        fileContent.cells.forEach(cell => {
+        content += cell.source.join('') + '\n';
+      });
+    }
+    else{
+      content = Fs.readFileSync(filePath, 'utf8');
+    }
+    
+    return content;
   } catch (error) {
     console.error(`Lỗi khi xử lý file ${filePath}:`);
     throw error;
@@ -157,16 +164,16 @@ app.post('/evaluate', upload.fields([{ name: 'pdfFile' }, { name: 'submission', 
     if (submissionFiles) {
       for (const file of submissionFiles) {
         // Sử dụng fs.readFile để đọc nội dung file
-        const fileData = extractContent(file.path); 
+        const fileData = extractContent(file.path, path.extname(file.originalname).toLowerCase()); 
         submissionContent += fileData + '\n';
       }
     }
     console.log(submissionContent);
     const systemPrompt ='Bạn là một giáo viên dạy lập trình lâu năm có kinh nghiệm, cũng như là chuyên gia chấm bài thi \n\
                 Vai trò chính của bạn là dựa vào đề thi cũng như bài giải có sẵn, xem bài giải mẫu đó có giải quyết được đề thi hay không và có lời giải nào hay hơn nữa không\n\
-                Nhiệm vụ là chấm điểm bài giải có sẵn, xem bài giải có giải quyết được đề thi cũng như đã tối ưu hay chưa và nếu chưa thì đưa ra lời giải khác hay hơn.\n\
+                Nhiệm vụ là xem bài giải có giải quyết được đề thi cũng như đã tối ưu hay chưa và nếu chưa thì đưa ra lời giải khác hay hơn.\n\
                 Hướng dẫn quan trọng\n\
-                Trình bày lời giải ngắn gọn và dễ hiểu, hoàn toàn bằng tiếng Việt'
+                Trình bày ngắn gọn và dễ hiểu, hoàn toàn bằng tiếng Việt'
 
     const prompt = `## Yêu cầu đề bài:
     ${pdfContent}
@@ -174,8 +181,8 @@ app.post('/evaluate', upload.fields([{ name: 'pdfFile' }, { name: 'submission', 
     ## Bài làm mẫu:
     ${submissionContent}
 
-    Tôi đang gặp vấn đề về chấm bài làm, bạn hãy giúp tôi 
-    chấm điểm bài giải có sẵn, xem bài giải giải quyết được bao nhiêu câu trong đề thi, cũng như đã tối ưu hay chưa 
+    Tôi đang gặp vấn đề về duyệt đề và bài làm mẫu, bạn hãy giúp tôi 
+    xem bài giải có sẵn đó giải quyết được bao nhiêu câu trong đề thi, cũng như đã tối ưu hay chưa 
     và nếu chưa thì đưa ra lời giải khác hay hơn. `;
 
     const messages = [
@@ -191,7 +198,6 @@ app.post('/evaluate', upload.fields([{ name: 'pdfFile' }, { name: 'submission', 
     res.status(500).json({ error: 'Lỗi trong quá trình chấm điểm.' });
   } finally {
     // ... (Delete uploaded files) ...
-    //fs.unlink(req.file.path);
     fs.unlink(req.files.pdfFile[0].path);
     for(const file of req.files['submission']){
       fs.unlink(file.path);
@@ -247,12 +253,12 @@ app.post('/summarize', upload.single('syllabus'), async (req, res) => {
         console.log(selectModel);
         var content = (await mammoth.extractRawText({ path: req.file.path })).value;
         const systemPrompt ='Bạn là một giáo viên lập trình lâu năm có kinh nghiệm, cũng như chuyên gia về rút trích tóm tắt các Syllabus của các khóa học.\n\
-                            Vai trò chính của bạn là dựa trên Syllabus của một môn học, hãy tìm các nội dung chính và phụ, tóm tắt theo nội dung chính là chủ yếu.\n\
-                            Nhiệm vụ là tạo ra bản tóm tắt Syllabus xúc tích, ngắn gọn bao gồm nội dung chính và liệt kê theo dạng bullet, thường dài từ 400 từ trở xuống\n\
+                            Vai trò chính của bạn là dựa trên Syllabus của một môn học, hãy tìm các nội dung chính và phụ, tóm tắt theo nội dung chính lẫn phụ của Syllabus.\n\
+                            Nhiệm vụ là tạo ra bản tóm tắt Syllabus xúc tích, ngắn gọn bao gồm nội dung chính, phụ và liệt kê theo dạng bullet, thường dài từ 400 từ trở xuống\n\
                             Hướng dẫn quan trọng:\n\
                             Chú ý đến các nội dung chính, bỏ qua các phần đầu như set up môi trường hay các khái niệm chung về lập trình.\n\
-                            Chỉ từ 5-7 nội dung chính.'
-        console.log(content);
+                            Chỉ từ 5-7 nội dung chính.\n\
+                            2-3 nội dung phụ'
         const prompt = `## Đây là nội dung khóa học:
         ${content}
 
@@ -280,8 +286,8 @@ app.post('/summarize', upload.single('syllabus'), async (req, res) => {
 async function callModel(selectModel, systemPrompt, prompt, messages){
   var result;
         switch(selectModel){
-          case 'gemini-1.5-flash':
-          case 'gemini-1.5-pro':
+          case 'gemini-1.5-flash-002':
+          case 'gemini-1.5-pro-002':
             ///Call Google AI studio
             console.log(selectModel);
             const model = genAI.getGenerativeModel({ model: `${selectModel}` , systemInstruction: {
@@ -297,7 +303,7 @@ async function callModel(selectModel, systemPrompt, prompt, messages){
           case 'mixtral-8x7b-32768':
           case 'llama3-8b-8192':
           case 'gemma2-9b-it':
-            ///
+          case 'llama-3.2-3b-preview':
             console.log(selectModel);
             const MixtralResponse = await groq.chat.completions.create({
               model: `${selectModel}`, 

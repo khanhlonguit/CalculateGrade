@@ -210,27 +210,114 @@
     .file-names-submission {
         margin-top: 20px;
     }
+
+    .accordion-button {
+        font-weight: bold;
+    }
 </style>
 
 <div class="home">
     <h1 class="display-4">@ViewData["Title"]</h1>
 
     <form id="gradingForm" enctype="multipart/form-data">
-        @* <div class="form-group">
-            <label for="requirementFile">Tải lên đề bài:</label>
-            <input type="file" class="form-control-file" id="requirementFile" name="requirementFile" accept=".docx" required>
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Chọn file đề bài
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="form-group custom-file-upload">
+                            <label for="requirementFile">Tải lên đề bài (.docx):</label>
+                            <input type="file" class="form-control-file" id="requirementFile" name="requirementFile" accept=".docx" required>
+                            <label for="requirementFile" class="custom-file-upload-label">
+                                <i class="fas fa-file-upload"></i> Chọn file đề bài
+                            </label>
+                            <div class="file-name-requirement">
+                                <p>Không có file nào được chọn</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Chọn file bài làm (tối đa 5 file)
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="form-group custom-file-upload">
+                            <label for="submissionFile">Tải lên bài làm (.ipynb):</label>
+                            <input type="file" class="form-control-file" id="submissionFile" name="submissionFile" multiple>
+                            <label for="submissionFile" class="custom-file-upload-label">
+                                <i class="fas fa-file-upload"></i> Chọn file bài làm
+                            </label>
+                            <div class="file-names-submission">
+                                <p>Không có file nào được chọn</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        Syllabus
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="form-group">
+                            <div id="Syllabus" contenteditable="true">@Html.Raw(Model.Syllabus)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        Chọn Model
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="Model1">Model 1:</label>
+                                    <select class="form-control" id="Model1" name="Model1">
+                                        <option value="gemini-1.5-flash-002" selected>gemini-1.5-flash</option>
+                                        <option value="gemini-1.5-pro-002">gemini-1.5-pro</option>
+                                        <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                                        <option value="llama3-8b-8192">llama3-8b-8192</option>
+                                        <option value="gemma2-9b-it">gemma2-9b-it</option>
+                                        <option value="llama-3.2-3b-preview">llama-3.2-3b-preview</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="Model2">Model 2:</label>
+                                    <select class="form-control" id="Model2" name="Model2">
+                                        <option value="gemini-1.5-flash-002">gemini-1.5-flash</option>
+                                        <option value="gemini-1.5-pro-002">gemini-1.5-pro</option>
+                                        <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                                        <option value="llama3-8b-8192">llama3-8b-8192</option>
+                                        <option value="gemma2-9b-it" selected>gemma2-9b-it</option>
+                                        <option value="llama-3.2-3b-preview">llama-3.2-3b-preview</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="submissionFile">Tải lên bài làm:</label>
-            <input type="file" class="form-control-file" id="submissionFile" name="submissionFile" multiple>
-        </div>
-        <div class="form-group">
-            <label for="Syllabus">Syllabus:</label>
-            <textarea class="form-control" id="Syllabus" name="Syllabus" rows="3">@Model.Syllabus</textarea>
-        </div> *@
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <div class="form-group custom-file-upload">
+        @* <div class="form-group custom-file-upload">
             <label for="requirementFile">Tải lên đề bài (.docx):</label>
             <input type="file" class="form-control-file" id="requirementFile" name="requirementFile" accept=".docx" required>
             <label for="requirementFile" class="custom-file-upload-label">
@@ -260,8 +347,8 @@
                 <div class="form-group">
                     <label for="Model1">Model 1:</label>
                     <select class="form-control" id="Model1" name="Model1">
-                        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-                        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                        <option value="gemini-1.5-flash-002">gemini-1.5-flash</option>
+                        <option value="gemini-1.5-pro-002">gemini-1.5-pro</option>
                         <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
                         <option value="llama3-8b-8192">llama3-8b-8192</option>
                         <option value="gemma2-9b-it">gemma2-9b-it</option>
@@ -272,15 +359,15 @@
                 <div class="form-group">
                     <label for="Model2">Model 2:</label>
                     <select class="form-control" id="Model2" name="Model2">
-                        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-                        <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                        <option value="gemini-1.5-flash-002">gemini-1.5-flash</option>
+                        <option value="gemini-1.5-pro-002">gemini-1.5-pro</option>
                         <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
                         <option value="llama3-8b-8192">llama3-8b-8192</option>
                         <option value="gemma2-9b-it">gemma2-9b-it</option>
                     </select>
                 </div>
             </div>
-        </div>       
+        </div>*@
         <div class="button-group">
             <button type="button" class="btn btn-primary mr-2" id="btnGrade">               
                 Chấm điểm
@@ -288,7 +375,7 @@
             <button type="button" class="btn btn-secondary" id="btnCheckSyllabus">
                 Kiểm tra Syllabus
             </button>
-        </div>
+        </div> 
     </form>
 
     <div class="row mt-5" id="results" style="display:none;">
@@ -496,5 +583,13 @@
                 });
             }
         }
+        $(document).ready(function () {
+            // Kiểm tra giá trị của Syllabus
+            var syllabusContent = $("#Syllabus").text().trim(); // Lấy nội dung text và loại bỏ khoảng trắng
+            if (syllabusContent !== "") { // Kiểm tra xem có nội dung hay không
+                $("#collapseThree").addClass("show"); // Mở rộng item accordion
+                $("#collapseThree").prev().find(".accordion-button").removeClass("collapsed").attr("aria-expanded", "true"); // Cập nhật trạng thái button
+            }
+        });
     </script>
 }
