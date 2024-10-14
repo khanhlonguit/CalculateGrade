@@ -1,101 +1,13 @@
-﻿
-@model CalculateGrade.Models.EvaluateModel
+﻿@model CalculateGrade.Models.ExamModel
 @{
-    ViewData["Title"] = "Chấm điểm bài tập";
+    ViewData["Title"] = "Phát sinh đề bài";
 }
-
 <style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f8f9fa;
-        color: #343a40;
-    }
-    .home {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
     h1 {
         text-align: center;
         margin-bottom: 30px;
         color: #3498db;
     }
-
-    .form-group label {
-        font-weight: 600;
-        color: #2c3e50;
-    }
-
-    textarea{
-        height: 300px;
-    }
-
-    #btnGrade {
-        background-color: #28a745;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        border-radius: 25px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    #btnGrade:hover{
-        background-color: #218838;
-        border-color: #1e7e34;
-        box-shadow: 0px 4px 8px rgba(40, 167, 69, 0.3);
-    }
-    #btnCheckSyllabus {
-        background-color: #34495e;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        border-radius: 25px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    #btnCheckSyllabus:hover{
-        background-color: #34495e;
-        border-color: #34495e;
-    }
-    .card {
-        border: none;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .card-header {
-        background-color: #f5f5f5;
-        border-bottom: none;
-    }
-
-    .card-header h4 {
-        font-weight: 600;
-    }
-
-    #feedback1, #syllabusMatch1 {
-        color: #3498db;
-        text-align: left;
-        overflow-y: auto;
-    }
-
-    #feedback2, #syllabusMatch2 {
-        color: #27ae60;
-        text-align: left;
-        overflow-y: auto;
-    }
-
-    .display-4 {
-        font-weight: 600;
-        color: #007bff;
-    }
-    ////
-    .custom-form {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 30px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
     .custom-file-upload {
         position: relative;
         display: block;
@@ -142,15 +54,17 @@
         color: #6c757d;
     }
 
-    .btn-block {
-        width: 100%;
+    .file-name-requirement
+    {
+        margin-top: 20px;
     }
-
-    textarea.form-control {
-        resize: vertical; /* Cho phép thay đổi chiều cao của textarea */
-    }
-    .button-group{
-        padding-top: 20px;
+    #Syllabus {
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 30px;
+        overflow-x: auto;
+        height: 500px;
     }
 
     .card-body {
@@ -164,11 +78,11 @@
         height: 700px;
     }
 
-    .card-body:hover {
-        opacity: 1; /* Hiển thị khi hover */
-        transform: translateY(0); /* Trở về vị trí ban đầu */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Thêm shadow */
-    }
+        .card-body:hover {
+            opacity: 1; /* Hiển thị khi hover */
+            transform: translateY(0); /* Trở về vị trí ban đầu */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Thêm shadow */
+        }
 
     .dots-5 {
         width: 15px;
@@ -198,33 +112,28 @@
             background: #000
         }
     }
-    #Syllabus{
-        background-color: #fff;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        padding: 30px;
-        overflow-x: auto;
-        height: 500px;
-    }
-    .file-name-requirement,
-    .file-names-submission {
-        margin-top: 20px;
+
+    #feedback1 {
+        color: #3498db;
+        text-align: left;
+        overflow-y: auto;
     }
 
-    .accordion-button {
-        font-weight: bold;
+    #feedback2 {
+        color: #27ae60;
+        text-align: left;
+        overflow-y: auto;
     }
 </style>
 
-<div class="home">
+<div>
     <h1 class="display-4">@ViewData["Title"]</h1>
-
-    <form id="gradingForm" enctype="multipart/form-data">
+    <form id="examArising" enctype="multipart/form-data">
         <div class="accordion" id="accordionExample">
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Chọn file đề bài
+                        Tải file đề bài mẫu
                     </button>
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
@@ -245,31 +154,10 @@
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        Chọn file bài làm (tối đa 5 file)
-                    </button>
-                </h2>
-                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        <div class="form-group custom-file-upload">
-                            <label for="submissionFile">Tải lên bài làm (.ipynb):</label>
-                            <input type="file" class="form-control-file" id="submissionFile" name="submissionFile" multiple>
-                            <label for="submissionFile" class="custom-file-upload-label">
-                                <i class="fas fa-file-upload"></i> Chọn file bài làm
-                            </label>
-                            <div class="file-names-submission">
-                                <p>Không có file nào được chọn</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                         Syllabus
                     </button>
                 </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         <div class="form-group">
                             <div id="Syllabus" contenteditable="true">@Html.Raw(Model.Syllabus)</div>
@@ -279,11 +167,11 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                        Chọn Model
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        Chọn model
                     </button>
                 </h2>
-                <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -316,27 +204,25 @@
                     </div>
                 </div>
             </div>
+            <div>
+                <button type="button" class="btn btn-secondary" id="btnExamArise">
+                    Generate
+                </button>
+            </div>
         </div>
-        
-        <div class="button-group">
-            <button type="button" class="btn btn-primary mr-2" id="btnGrade">               
-                Chấm điểm
-            </button>
-            <button type="button" class="btn btn-secondary" id="btnCheckSyllabus">
-                Kiểm tra Syllabus
-            </button>
-        </div> 
     </form>
-
     <div class="row mt-5" id="results" style="display:none;">
         <div class="col-md-6">
             <div class="card-body d-flex flex-column">
                 <div class="loading-container d-flex align-items-center justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                     <div class="dots-5" id="loadingFeedback1" role="status" aria-hidden="true" style="display:none"></div>
                 </div>
-                <div id ="feedback1">
+                <div id="feedback1">
                 </div>
             </div>
+            <button type="button" class="select-button" id="convertButton">
+                Download
+            </button>
         </div>
         <div class="col-md-6">
             <div class="card-body d-flex flex-column">
@@ -348,42 +234,14 @@
             </div>
         </div>
     </div>
-    <div class="row mt-5" id="resultsSyllabus" style="display:none;">
-        <div class="col-md-6">
-            <div class="d-flex flex-column">
-                <div class="card-body flex-grow-1 overflow-auto">
-                    <div class="loading-container d-flex align-items-center justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                        <div class="dots-5" id="loadingSyllabusMatch1" role="status" aria-hidden="true" style="display:none"></div>
-                    </div>
-                    <div id="syllabusMatch1">
-                    </div>
-                </div>               
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="d-flex flex-column">
-                <div class="card-body flex-grow-1 overflow-auto">
-                    <div class="loading-container d-flex align-items-center justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                        <div class="dots-5" id="loadingSyllabusMatch2" role="status" aria-hidden="true" style="display:none"></div>
-                    </div>
-                    <div id="syllabusMatch2">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>
 @section Scripts{
-    <script>
-        //const fileInputs = document.querySelectorAll('.custom-file-upload input[type="file"]');
-        const submissionFileInput = document.getElementById('submissionFile');
+<script>
+
         const requirementFileInput = document.getElementById('requirementFile');
         const fileNameRequirementContainer = document.querySelector('.file-name-requirement');
-        const fileNamesSubmissionContainer = document.querySelector('.file-names-submission');
-
         function displayFileNames(input, container) {
-            container.innerHTML = '';
-
             if (input.files.length > 0) {
                 for (let i = 0; i < input.files.length; i++) {
                     const fileName = input.files[i].name;
@@ -398,36 +256,83 @@
             }
         }
 
-        submissionFileInput.addEventListener('change', function () {
-            displayFileNames(this, fileNamesSubmissionContainer);
-        });
-
         requirementFileInput.addEventListener('change', function () {
             displayFileNames(this, fileNameRequirementContainer);
-        });       
-        
+        });
+
         $(document).ready(function () {
-            $("#btnGrade").click(function () {
-                if (validateGrading()) {
+            $("#btnExamArise").click(function () {
+                if (validate()) {
                     $("#results").show();
                     $("#loadingFeedback1").show();
                     $("#loadingFeedback2").show();
                     scrollToElement('#results');
-                    submitForm('@Url.Action("Grade", "Home")');
-                }               
+                    submitForm('@Url.Action("ExamArise", "Exam")');
+                }
             });
 
-            $("#btnCheckSyllabus").click(function () {
-                if (validateSyllabus()) {
-                    $("#resultsSyllabus").show();
-                    $("#loadingSyllabusMatch1").show();
-                    $("#loadingSyllabusMatch2").show();
-                    scrollToElement('#resultsSyllabus');
-                    submitFormSyllabus('@Url.Action("CheckSyllabus", "Home")');
-                }               
+            
+        });
+        function submitForm(url) {
+            var formData = new FormData();
+            var syllabus = document.getElementById("Syllabus").textContent;
+            // Lấy giá trị từ các input và thêm vào FormData
+            formData.append("requirementFile", $("#requirementFile")[0].files[0]);
+            formData.append("Syllabus", syllabus);
+            formData.append("Model1", $("#Model1").val());
+            formData.append("Model2", $("#Model2").val());
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#feedback1").html(response.resultGoogle);
+                    $("#feedback2").html(response.resultGroq);
+                    $("#loadingFeedback1").hide();
+                    $("#loadingFeedback2").hide();
+                },
+                error: function () {
+                    alert("Đã xảy ra lỗi.");
+                    $("#feedback1").html('đã xảy ra lỗi');
+                    $("#feedback2").html('đã xảy ra lỗi');
+                    $("#loadingFeedback1").hide();
+                    $("#loadingFeedback2").hide();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#convertButton").click(function () { // Giả sử bạn có một button có id là "convertButton"
+                
+                $.ajax({
+                    url: '@Url.Action("ConvertToWord", "Exam")', // Thay 'your-controller' bằng tên controller của bạn
+                    type: 'POST',
+                    data: { htmlContent: document.getElementById('feedback1').innerHTML },
+                    success: function (response, status, xhr) {
+                        // Tạo link download ẩn
+                        var a = document.createElement('a');
+                        a.href = 'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,' + response;
+                        a.download = 'output.docx';
+                        a.style.display = 'none';
+                        document.body.appendChild(a);
+
+                        // Click link để download
+                        a.click();
+
+                        // Xóa link download
+                        a.remove();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                        alert("Đã xảy ra lỗi khi chuyển đổi sang Word.");
+                    }
+                });
             });
         });
-        function validateSyllabus() {
+        function validate() {
             // Kiểm tra xem có file được chọn cho input "requirementFile" hay không
             if ($('#requirementFile')[0].files.length === 0) {
                 alert('Vui lòng chọn file đề bài!');
@@ -444,84 +349,6 @@
 
             return true; // Form hợp lệ
         }
-        function validateGrading(){
-            if ($('#requirementFile')[0].files.length === 0) {
-                alert('Vui lòng chọn file đề bài!');
-                return false;
-            }
-            if ($('#submissionFile')[0].files.length === 0) {
-                alert('Vui lòng chọn file bài giải!');
-                return false;
-            }
-            return true;
-        }
-        function submitForm(url) {
-            var formData = new FormData();
-            var syllabus = document.getElementById("Syllabus").textContent;
-            // Lấy giá trị từ các input và thêm vào FormData
-            formData.append("requirementFile", $("#requirementFile")[0].files[0]);
-            formData.append("Syllabus", syllabus);
-            formData.append("Model1", $("#Model1").val());
-            formData.append("Model2", $("#Model2").val());
-            // Lấy tất cả file trong input "SolutionFiles"
-            $.each($("#submissionFile")[0].files, function (i, file) {
-                formData.append('submissionFile[' + i + ']', file);
-            });
-
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    $("#feedback1").html(response.evaluation);
-                    $("#feedback2").html(response.evaluationMixtral);
-                    $("#loadingFeedback1").hide();
-                    $("#loadingFeedback2").hide();
-                },
-                error: function () {
-                    alert("Đã xảy ra lỗi.");
-                    $("#feedback1").html('đã xảy ra lỗi');
-                    $("#feedback2").html('đã xảy ra lỗi');
-                    $("#loadingFeedback1").hide();
-                    $("#loadingFeedback2").hide();
-                }
-            });
-        }
-        function submitFormSyllabus(url) {
-            var formData = new FormData();
-            var syllabus = document.getElementById("Syllabus").textContent;
-            // Lấy giá trị từ các input và thêm vào FormData
-            formData.append("requirementFile", $("#requirementFile")[0].files[0]);
-            formData.append("Syllabus", syllabus);
-            formData.append("Model1", $("#Model1").val());
-            formData.append("Model2", $("#Model2").val());
-            // Lấy tất cả file trong input "SolutionFiles"
-            $.each($("#submissionFile")[0].files, function (i, file) {
-                formData.append('submissionFile[' + i + ']', file);
-            });
-
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    $("#syllabusMatch1").html(response.syllabusCheckResult);
-                    $("#syllabusMatch2").html(response.syllabusMixtral);
-                    
-                    $("#loadingSyllabusMatch1").hide();
-                    $("#loadingSyllabusMatch2").hide();
-                },
-                error: function () {
-                    alert("Đã xảy ra lỗi.");
-                    $("#loadingSyllabusMatch1").hide();
-                    $("#loadingSyllabusMatch2").hide();
-                }
-            });
-        }
         function scrollToElement(elementId) {
             const element = document.querySelector(elementId);
 
@@ -537,9 +364,9 @@
             // Kiểm tra giá trị của Syllabus
             var syllabusContent = $("#Syllabus").text().trim(); // Lấy nội dung text và loại bỏ khoảng trắng
             if (syllabusContent !== "") { // Kiểm tra xem có nội dung hay không
-                $("#collapseThree").addClass("show"); // Mở rộng item accordion
-                $("#collapseThree").prev().find(".accordion-button").removeClass("collapsed").attr("aria-expanded", "true"); // Cập nhật trạng thái button
+                $("#collapseTwo").addClass("show"); // Mở rộng item accordion
+                $("#collapseTwo").prev().find(".accordion-button").removeClass("collapsed").attr("aria-expanded", "true"); // Cập nhật trạng thái button
             }
         });
-    </script>
+</script>
 }
