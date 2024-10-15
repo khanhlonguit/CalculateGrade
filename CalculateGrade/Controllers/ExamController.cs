@@ -8,6 +8,7 @@ namespace CalculateGrade.Controllers
 {
     public class ExamController : Controller
     {
+        
         public IActionResult Index()
         {
             string result = TempData["Result"] as string;
@@ -49,36 +50,19 @@ namespace CalculateGrade.Controllers
         [HttpPost]
         public IActionResult ConvertToWord(string htmlContent)
         {
-            //using (MemoryStream memoryStream = new MemoryStream())
-            //{
-            //    using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(memoryStream, WordprocessingDocumentType.Document))
-            //    {
-            //        MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
-            //        mainPart.Document = new Document();
-            //        Body body = mainPart.Document.AppendChild(new Body());
-
-            //        // Chèn nội dung HTML vào body
-            //        AlternativeFormatImportPart chunk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.Html);
-            //        using (StreamWriter sw = new StreamWriter(chunk.GetStream()))
-            //        {
-            //            sw.Write(htmlContent);
-            //        }
-            //        AltChunk altChunk = new AltChunk();
-            //        altChunk.Id = wordDocument.MainDocumentPart.GetIdOfPart(chunk);
-            //        body.AppendChild(altChunk);
-
-            //        //wordDocument.Close();
-            //    }
-            //    string base64String = Convert.ToBase64String(memoryStream.ToArray());
-
-            //    return Ok(base64String);
-            //    //return File(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "output.docx");
-            //}
             Document document = new Document();
-            DocumentBuilder builder = new DocumentBuilder(document);
-            builder.InsertHtml(htmlContent);
-            document.Save(@"C:\Users\hv\Downloads\html-string-as-word.docx", SaveFormat.Docx);
-            return Ok();
+            using (MemoryStream stream = new MemoryStream())
+            {
+                DocumentBuilder builder = new DocumentBuilder(document);
+                builder.InsertHtml(htmlContent);
+                document.Save(stream, SaveFormat.Docx);
+
+                // Đặt tên file
+                string fileName = "DeThi" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".docx";
+
+                // Trả về file docx dưới dạng stream trong HTTP response
+                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+            }
         }
     }
 }
