@@ -17,4 +17,8 @@ const safetySettings = [
   { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
 ];
 
-module.exports = { model, generationConfig, safetySettings };
+module.exports = {
+  model,
+  generationConfig,
+  safetySettings,
+};

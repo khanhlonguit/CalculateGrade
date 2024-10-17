@@ -1,5 +1,10 @@
-const { genAI } = require('../config/aiConfig');
-const { groq } = require('../config/groqConfig');
+require('dotenv').config();
+
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { Groq } = require('groq-sdk');
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 async function callModel(selectModel, systemPrompt, prompt, messages) {
   let result;
