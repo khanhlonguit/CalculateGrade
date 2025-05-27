@@ -184,34 +184,7 @@
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="Model1">Model 1:</label>
-                                    <select class="form-control" id="Model1" name="Model1">
-                                        <option value="gemini-1.5-flash-002" selected>gemini-1.5-flash</option>
-                                        <option value="gemini-1.5-pro-002">gemini-1.5-pro</option>
-                                        <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
-                                        <option value="llama3-8b-8192">llama3-8b-8192</option>
-                                        <option value="gemma2-9b-it">gemma2-9b-it</option>
-                                        <option value="llama-3.2-3b-preview">llama-3.2-3b-preview</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="Model2">Model 2:</label>
-                                    <select class="form-control" id="Model2" name="Model2">
-                                        <option value="gemini-1.5-flash-002">gemini-1.5-flash</option>
-                                        <option value="gemini-1.5-pro-002">gemini-1.5-pro</option>
-                                        <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
-                                        <option value="llama3-8b-8192">llama3-8b-8192</option>
-                                        <option value="gemma2-9b-it" selected>gemma2-9b-it</option>
-                                        <option value="llama-3.2-3b-preview">llama-3.2-3b-preview</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                        @Html.Partial("_ModelSelector")
                     </div>
                 </div>
             </div>
@@ -321,6 +294,8 @@
                     $("#loadingFeedback2").hide();
                 }
             });
+            var examForm = $('#examArising').serializeArray();
+            sessionStorage.setItem('examFormData', JSON.stringify(formData));
         }
 
         function download(i) {

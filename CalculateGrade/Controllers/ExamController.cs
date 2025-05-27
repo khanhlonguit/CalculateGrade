@@ -8,12 +8,22 @@ namespace CalculateGrade.Controllers
 {
     public class ExamController : Controller
     {
+        private readonly IAIModelService _aiModelService;
+
+        public ExamController(IAIModelService aiModelService)
+        {
+            _aiModelService = aiModelService;
+        }
         
         public IActionResult Index()
         {
             string result = TempData["Result"] as string;
             var model = new ExamModel();
             model.Syllabus = result;
+            
+            // Truyền danh sách models qua ViewBag
+            ViewBag.Models = _aiModelService.GetAllModels();
+            
             return View(model);
         }
         [HttpPost]

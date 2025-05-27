@@ -9,8 +9,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 async function callModel(selectModel, systemPrompt, prompt, messages) {
   let result;
   switch(selectModel) {
-    case 'gemini-1.5-flash-002':
-    case 'gemini-1.5-pro-002':
+    case 'gemini-2.5-flash-preview-04-17':
       console.log(selectModel);
       const model = genAI.getGenerativeModel({ 
         model: `${selectModel}`,
@@ -24,7 +23,8 @@ async function callModel(selectModel, systemPrompt, prompt, messages) {
     case 'mixtral-8x7b-32768':
     case 'llama3-8b-8192':
     case 'gemma2-9b-it':
-    case 'llama-3.2-3b-preview':
+    case 'llama-3.3-70b-versatile':
+    case 'deepseek-r1-distill-llama-70b':
       console.log(selectModel);
       const MixtralResponse = await groq.chat.completions.create({
         model: `${selectModel}`, 

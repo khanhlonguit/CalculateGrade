@@ -8,8 +8,18 @@ namespace CalculateGrade.Controllers
 {
     public class SyllabusController : Controller
     {
+        private readonly IAIModelService _aiModelService;
+
+        public SyllabusController(IAIModelService aiModelService)
+        {
+            _aiModelService = aiModelService;
+        }
+
         public IActionResult Index()
         {
+            // Truyền danh sách models qua ViewBag
+            ViewBag.Models = _aiModelService.GetAllModels();
+            
             return View(new SyllabusModel());
         }
 

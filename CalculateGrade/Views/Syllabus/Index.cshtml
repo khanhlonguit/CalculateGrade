@@ -216,49 +216,7 @@
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-
-                                    <div class="d-flex align-items-center">
-                                        <label for="Model1" style="
-                               margin: 10px;">Model 1</label>
-                                        <select class="form-control w-50 me-2" id="Model1" name="Model1">
-                                            <option value="gemini-1.5-flash-002">gemini-1.5-flash</option>
-                                            <option value="gemini-1.5-pro-002">gemini-1.5-pro</option>
-                                            <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
-                                            <option value="llama3-8b-8192">llama3-8b-8192</option>
-                                            <option value="gemma2-9b-it" selected>gemma2-9b-it</option>
-                                            <option value="llama-3.2-3b-preview">llama-3.2-3b-preview</option>
-                                        </select>
-                                        <button type="button" class="btn btn-primary" id="GenerateModel1">
-                                            Generate
-                                        </button>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-
-                                    <div class="d-flex align-items-center">
-                                        <label for="Model2" style="
-                               margin: 10px;">Model 2:</label>
-                                        <select class="form-control w-50 me-2" id="Model2" name="Model2">
-                                            <option value="gemini-1.5-flash-002">gemini-1.5-flash</option>
-                                            <option value="gemini-1.5-pro-002">gemini-1.5-pro</option>
-                                            <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
-                                            <option value="llama3-8b-8192">llama3-8b-8192</option>
-                                            <option value="gemma2-9b-it" selected>gemma2-9b-it</option>
-                                            <option value="llama-3.2-3b-preview">llama-3.2-3b-preview</option>
-                                        </select>
-                                        <button type="button" class="btn btn-primary" id="GenerateModel2">
-                                            Generate
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        @Html.Partial("_SyllabusModelSelector")
                     </div>
                 </div>
             </div>
@@ -362,7 +320,7 @@
             // Lấy giá trị từ các input và thêm vào FormData
             formData.append("SyllabusFile", $("#SyllabusFile")[0].files[0]);
             formData.append("Model", $("#Model1").val());
-
+            sessionStorage.setItem('examFormData', JSON.stringify(formData));
             $.ajax({
                 url: url,
                 type: "POST",

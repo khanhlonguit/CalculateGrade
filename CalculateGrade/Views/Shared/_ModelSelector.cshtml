@@ -1,0 +1,31 @@
+@{
+    var modelsList = ViewBag.Models as List<CalculateGrade.Models.AIModel> ?? new List<CalculateGrade.Models.AIModel>();
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="Model1">Model 1:</label>
+            <select class="form-control" id="Model1" name="Model1">
+                @foreach (var aiModel in modelsList)
+                {
+                    <option value="@aiModel.Id" selected="@aiModel.IsDefault">@aiModel.DisplayName</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="Model2">Model 2:</label>
+            <select class="form-control" id="Model2" name="Model2">
+                @{
+                    var defaultModel2 = modelsList.Where(m => !m.IsDefault).FirstOrDefault()?.Id ?? modelsList.FirstOrDefault()?.Id;
+                }
+                @foreach (var aiModel in modelsList)
+                {
+                    <option value="@aiModel.Id" selected="@(aiModel.Id == defaultModel2)">@aiModel.DisplayName</option>
+                }
+            </select>
+        </div>
+    </div>
+</div> 

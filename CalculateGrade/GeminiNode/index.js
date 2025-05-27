@@ -9,6 +9,8 @@ const Fs = require('fs');
 const fs = require('node:fs/promises');
 const {Groq} = require('groq-sdk');
 const app = express();
+var cors = require('cors');
+app.use(cors());
 //const generateContent = require("./routes/gemini.js");
 app.use(express.json()); // Add this line to parse JSON in request body
 app.use(express.urlencoded({ extended: true })); //

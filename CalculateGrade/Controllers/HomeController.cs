@@ -8,11 +8,22 @@ namespace NotebookGrader.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IAIModelService _aiModelService;
+
+        public HomeController(IAIModelService aiModelService)
+        {
+            _aiModelService = aiModelService;
+        }
+
         public IActionResult Index()
         {
             string result = TempData["Result"] as string;
             var model = new EvaluateModel();
             model.Syllabus = result;
+            
+            // Truyền danh sách models qua ViewBag
+            ViewBag.Models = _aiModelService.GetAllModels();
+            
             return View(model);
         }
 
@@ -40,8 +51,8 @@ namespace NotebookGrader.Web.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var result = await response.Content.ReadFromJsonAsync<EvaluationResult>();
-                        return Json(new { Evaluation = MarkdownConverter.ConvertToHtml(result.Evaluation), 
-                                          EvaluationMixtral = MarkdownConverter.ConvertToHtml(result.EvaluationMixtral) });
+                        return Json(new { Evaluation = MarkdownConverter.ConvertToHtml(result.Evaluation ?? ""), 
+                                          EvaluationMixtral = MarkdownConverter.ConvertToHtml(result.EvaluationMixtral ?? "") });
                     }
                     else
                     {
