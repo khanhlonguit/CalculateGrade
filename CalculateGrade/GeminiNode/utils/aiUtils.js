@@ -8,31 +8,28 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 async function callModel(selectModel, systemPrompt, prompt, messages) {
   let result;
-  switch(selectModel) {
-    case 'gemini-2.5-flash-preview-04-17':
-      console.log(selectModel);
-      const model = genAI.getGenerativeModel({ 
-        model: `${selectModel}`,
-        systemInstruction: {
-          parts: [{ text: `${systemPrompt}` }],
-        },
-      });
-      const geminiResponse = await model.generateContent(prompt);
-      result = geminiResponse.response.text();
-      break;
-    case 'mixtral-8x7b-32768':
-    case 'llama3-8b-8192':
-    case 'gemma2-9b-it':
-    case 'llama-3.3-70b-versatile':
-    case 'deepseek-r1-distill-llama-70b':
-      console.log(selectModel);
-      const MixtralResponse = await groq.chat.completions.create({
-        model: `${selectModel}`, 
-        messages: messages,
-      });
-      result = MixtralResponse.choices[0].message.content;
-      break;
+  
+  // Kiểm tra nếu model có chứa chữ "gemini" (không phân biệt hoa thường)
+  if (selectModel.toLowerCase().includes('gemini')) {
+    console.log(`Sử dụng GoogleGenerativeAI cho model: ${selectModel}`);
+    const model = genAI.getGenerativeModel({ 
+      model: `${selectModel}`,
+      systemInstruction: {
+        parts: [{ text: `${systemPrompt}` }],
+      },
+    });
+    const geminiResponse = await model.generateContent(prompt);
+    result = geminiResponse.response.text();
+  } else {
+    // Tất cả các model khác sẽ sử dụng Groq
+    console.log(`Sử dụng Groq cho model: ${selectModel}`);
+    const groqResponse = await groq.chat.completions.create({
+      model: `${selectModel}`, 
+      messages: messages,
+    });
+    result = groqResponse.choices[0].message.content;
   }
+  
   return result;
 }
 
